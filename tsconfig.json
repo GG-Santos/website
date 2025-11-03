@@ -19,9 +19,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@shadcn/*": ["./src/components/ui/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@server/*": ["./src/server/*"],
+      "@features/*": ["./src/features/*"],
+      "@test/*": ["./src/test/*"]
     },
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": ["vitest", "node"]
   },
   "include": [
     "next-env.d.ts",
