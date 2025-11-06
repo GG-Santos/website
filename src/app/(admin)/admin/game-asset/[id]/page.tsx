@@ -62,7 +62,7 @@ const gameAssetSchema = z.object({
   published: z.boolean().default(true),
 });
 
-type GameAssetForm = z.input<typeof gameAssetSchema>;
+type GameAssetForm = z.infer<typeof gameAssetSchema>;
 
 export default function GameAssetEditPage() {
   const router = useRouter();
