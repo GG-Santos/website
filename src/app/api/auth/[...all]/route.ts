@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 const handler = toNextJsHandler(auth);
 
@@ -8,7 +8,7 @@ const handler = toNextJsHandler(auth);
 async function handleRequest(
   method: "GET" | "POST",
   request: NextRequest
-): Promise<NextResponse> {
+): Promise<Response> {
   try {
     if (method === "GET") {
       return await handler.GET(request);
@@ -41,7 +41,7 @@ async function handleRequest(
     }
 
     // Return a proper error response
-    return NextResponse.json(
+    return Response.json(
       {
         error: "Internal server error",
         message:
