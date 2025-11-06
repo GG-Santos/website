@@ -28,11 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: metadata.title,
     description: metadata.description,
-    icons: settings.favicon ? {
-      icon: settings.favicon,
-      shortcut: settings.favicon,
-      apple: settings.favicon,
-    } : undefined,
+    // Icons are handled by icon.tsx and apple-icon.tsx route handlers
   };
 }
 
@@ -43,11 +39,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <Suspense fallback={null}>
-          <FaviconLink />
-        </Suspense>
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -67,18 +58,5 @@ export default function RootLayout({
         </ConsentManager>
       </body>
     </html>
-  );
-}
-
-async function FaviconLink() {
-  const settings = await getSiteSettings();
-  if (!settings.favicon) return null;
-  
-  return (
-    <>
-      <link rel="icon" href={settings.favicon} />
-      <link rel="shortcut icon" href={settings.favicon} />
-      <link rel="apple-touch-icon" href={settings.favicon} />
-    </>
   );
 }
