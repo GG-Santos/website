@@ -408,17 +408,12 @@ export default function AccountPage() {
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        // Open the consent dialog using the consent manager hook
-                        if (consentManager?.openDialog) {
-                          consentManager.openDialog();
+                        // Open the consent dialog by finding and clicking the dialog trigger
+                        const dialogTrigger = document.querySelector('[data-c15t-dialog-trigger]') as HTMLElement;
+                        if (dialogTrigger) {
+                          dialogTrigger.click();
                         } else {
-                          // Fallback: try to find and click the consent dialog trigger
-                          const dialogTrigger = document.querySelector('[data-c15t-dialog-trigger]') as HTMLElement;
-                          if (dialogTrigger) {
-                            dialogTrigger.click();
-                          } else {
-                            toast.info("Please use the cookie banner to manage your preferences");
-                          }
+                          toast.info("Please use the cookie banner to manage your preferences");
                         }
                       }}
                       className="w-full"
