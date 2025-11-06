@@ -19,17 +19,26 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings();
-  const metadata = settings.metadata || {
-    title: "Juanito Bayani",
-    description: "An Underdogs Studios Production",
-  };
+  try {
+    const settings = await getSiteSettings();
+    const metadata = settings.metadata || {
+      title: "Juanito Bayani",
+      description: "An Underdogs Studios Production",
+    };
 
-  return {
-    title: metadata.title,
-    description: metadata.description,
-    // Icons are handled by icon.tsx and apple-icon.tsx route handlers
-  };
+    return {
+      title: metadata.title,
+      description: metadata.description,
+      // Icons are handled by icon.tsx and apple-icon.tsx route handlers
+    };
+  } catch (error) {
+    // Fallback metadata if database is unavailable during static generation
+    // This allows the not-found page to be statically generated
+    return {
+      title: "Juanito Bayani",
+      description: "An Underdogs Studios Production",
+    };
+  }
 }
 
 export default function RootLayout({
