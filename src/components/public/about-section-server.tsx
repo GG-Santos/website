@@ -1,11 +1,21 @@
 import { AboutSection } from "./about-section";
-import { serverClient } from "@/lib/trpc/server";
+import prisma from "@/lib/prisma";
 import { getSiteSettings } from "@/lib/site-settings-server";
+
+const MAX_TESTIMONIALS = 8;
 
 export async function AboutSectionServer() {
   try {
     const [testimonials, settings] = await Promise.all([
-      serverClient.testimonial.getPublished.query(),
+      // Use Prisma directly instead of HTTP-based serverClient to avoid prerendering issues
+      prisma.testimonial.findMany({
+        where: { published: true },
+        orderBy: [
+          { order: "asc" },
+          { createdAt: "desc" },
+        ],
+        take: MAX_TESTIMONIALS,
+      }),
       getSiteSettings(),
     ]);
 
@@ -24,7 +34,11 @@ export async function AboutSectionServer() {
       />
     );
   } catch (error) {
-    console.error("Error fetching testimonials or site settings:", error);
+    // Silently handle errors during prerendering or when database is unavailable
+    // This prevents the page from crashing during static generation
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching testimonials or site settings:", error);
+    }
     // Return empty testimonials array on error with default about section
     return (
       <AboutSection
