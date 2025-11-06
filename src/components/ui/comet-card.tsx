@@ -22,7 +22,7 @@ export const CometCard = ({
   className?: string;
   children: React.ReactNode;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
-} & React.ComponentPropsWithoutRef<"div">) => {
+} & Omit<React.ComponentPropsWithoutRef<"div">, "onDrag" | "onDragStart" | "onDragEnd">) => {
   const ref = useRef<HTMLDivElement>(null);
 
   const x = useMotionValue(0);
