@@ -7,11 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   engine: "classic",
-  generator: {
-    client: {
-      output: "../node_modules/.prisma/client",
-    },
-  },
   datasource: {
     url: env("DATABASE_URL"),
   },

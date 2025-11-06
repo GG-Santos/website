@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf node_modules/.prisma/client && prisma generate && next build",
+    "build": "node scripts/clean-prisma.js && prisma generate && next build",
     "start": "next start",
-    "postinstall": "rm -rf node_modules/.prisma/client && prisma generate",
+    "postinstall": "node scripts/clean-prisma.js && prisma generate",
     "lint": "biome check",
     "format": "biome format --write",
     "prepare": "husky",
