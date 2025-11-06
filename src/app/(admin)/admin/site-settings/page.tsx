@@ -956,136 +956,185 @@ export default function SiteSettingsPage() {
               </form>
             </Form>
 
-            {/* Metadata Form */}
-            <Form {...metadataForm}>
-              <form
-                className="space-y-6"
-                onSubmit={metadataForm.handleSubmit((values) => {
-                  metadataMutation.mutate(values);
-                })}
-              >
+            {/* Metadata and Favicon Form */}
+            <div className="grid gap-6 md:grid-cols-[1fr_400px]">
+              <div className="space-y-6">
+                <Form {...metadataForm}>
+                  <form
+                    className="space-y-6"
+                    onSubmit={metadataForm.handleSubmit((values) => {
+                      metadataMutation.mutate(values);
+                    })}
+                  >
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Site Metadata</CardTitle>
+                        <CardDescription>
+                          Configure the site title and description used in SEO and browser tabs
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormField
+                          control={metadataForm.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Site Title</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Juanito Bayani" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                This appears in browser tabs and search results
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={metadataForm.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Site Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="An Underdogs Studios Production"
+                                  rows={3}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormDescription>
+                                This appears in search engine results
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button disabled={metadataMutation.isPending} type="submit">
+                          {metadataMutation.isPending ? "Saving..." : "Save Metadata"}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </form>
+                </Form>
+              </div>
+
+              <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Site Metadata</CardTitle>
+                    <CardTitle>Favicon</CardTitle>
                     <CardDescription>
-                      Configure the site title and description used in SEO and browser tabs
+                      Upload a favicon image (recommended: 32x32 or 64x64 PNG)
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <FormField
-                      control={metadataForm.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Site Title</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Juanito Bayani" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            This appears in browser tabs and search results
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={metadataForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Site Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="An Underdogs Studios Production"
-                              rows={3}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            This appears in search engine results
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button disabled={metadataMutation.isPending} type="submit">
-                      {metadataMutation.isPending ? "Saving..." : "Save Metadata"}
-                    </Button>
+                    {faviconPreview ? (
+                      <div className="relative aspect-square w-full overflow-hidden rounded-lg border">
+                        <Image
+                          src={faviconPreview}
+                          alt="Favicon preview"
+                          fill
+                          className="object-contain"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={() => {
+                            setFaviconPreview("");
+                            faviconMutation.mutate({ favicon: "" });
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center aspect-square border-2 border-dashed rounded-lg">
+                        <div className="text-center">
+                          <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Upload a favicon
+                          </p>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={faviconFileInputRef}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setFaviconUploading(true);
+                              try {
+                                const formData = new FormData();
+                                formData.append("file", file);
+                                formData.append("folder", "favicon");
+
+                                const response = await fetch("/api/upload", {
+                                  method: "POST",
+                                  body: formData,
+                                });
+
+                                if (!response.ok) {
+                                  throw new Error("Upload failed");
+                                }
+
+                                const data = await response.json();
+                                setFaviconPreview(data.url);
+                                faviconMutation.mutate({ favicon: data.url });
+                              } catch (error) {
+                                console.error("Upload error:", error);
+                                toast.error("Failed to upload favicon");
+                              } finally {
+                                setFaviconUploading(false);
+                                if (faviconFileInputRef.current) {
+                                  faviconFileInputRef.current.value = "";
+                                }
+                              }
+                            }}
+                            className="hidden"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={faviconUploading}
+                            onClick={() => faviconFileInputRef.current?.click()}
+                          >
+                            {faviconUploading ? "Uploading..." : "Choose File"}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Favicon URL</label>
+                      <Input
+                        placeholder="https://example.com/favicon.png"
+                        value={faviconPreview || ""}
+                        onChange={(e) => {
+                          setFaviconPreview(e.target.value);
+                        }}
+                        onBlur={(e) => {
+                          const url = e.target.value.trim();
+                          if (url) {
+                            faviconMutation.mutate({ favicon: url });
+                          } else if (!url && faviconPreview) {
+                            faviconMutation.mutate({ favicon: "" });
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.currentTarget.blur();
+                          }
+                        }}
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        Or paste an image URL directly (press Enter or click away to save)
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
-              </form>
-            </Form>
-
-            {/* Favicon Form */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Favicon</CardTitle>
-                <CardDescription>
-                  Upload a favicon image (recommended: 32x32 or 64x64 PNG)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {faviconPreview ? (
-                  <div className="relative inline-block">
-                    <div className="relative h-16 w-16 overflow-hidden rounded border">
-                      <Image
-                        src={faviconPreview}
-                        alt="Favicon preview"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -right-2 -top-2 h-6 w-6"
-                      onClick={() => {
-                        setFaviconPreview("");
-                        faviconMutation.mutate({ favicon: "" });
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center border-2 border-dashed rounded-lg p-8">
-                    <div className="text-center">
-                      <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Upload a favicon
-                      </p>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={faviconFileInputRef}
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          await handleImageUpload(
-                            file,
-                            "favicon",
-                            (url) => faviconMutation.mutate({ favicon: url }),
-                            setFaviconPreview,
-                            setFaviconUploading,
-                            faviconFileInputRef,
-                          );
-                        }}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={faviconUploading}
-                        onClick={() => faviconFileInputRef.current?.click()}
-                      >
-                        {faviconUploading ? "Uploading..." : "Choose File"}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         )}
       </div>
