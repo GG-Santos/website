@@ -112,7 +112,8 @@
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
     "winston": "^3.18.3",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "prisma": "^6.19.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.2",
@@ -144,7 +145,6 @@
     "msw": "^2.11.6",
     "msw-storybook-addon": "^2.0.6",
     "playwright": "^1.56.1",
-    "prisma": "^6.19.0",
     "sass": "^1.93.3",
     "storybook": "^10.0.2",
     "tailwindcss": "^4",
