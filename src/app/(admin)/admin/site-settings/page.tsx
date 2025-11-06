@@ -1063,6 +1063,17 @@ export default function SiteSettingsPage() {
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (!file) return;
+
+                              if (!file.type.startsWith("image/")) {
+                                toast.error("Please upload an image file");
+                                return;
+                              }
+
+                              if (file.size > 5 * 1024 * 1024) {
+                                toast.error("Image size must be less than 5MB");
+                                return;
+                              }
+
                               setFaviconUploading(true);
                               try {
                                 const formData = new FormData();
@@ -1075,15 +1086,26 @@ export default function SiteSettingsPage() {
                                 });
 
                                 if (!response.ok) {
-                                  throw new Error("Upload failed");
+                                  const errorText = await response.text();
+                                  throw new Error(errorText || "Upload failed");
                                 }
 
                                 const data = await response.json();
+                                if (!data.url) {
+                                  throw new Error("No URL returned from upload");
+                                }
+                                
                                 setFaviconPreview(data.url);
+                                // Save automatically after upload
                                 faviconMutation.mutate({ favicon: data.url });
+                                toast.success("Favicon uploaded and saved");
                               } catch (error) {
                                 console.error("Upload error:", error);
-                                toast.error("Failed to upload favicon");
+                                toast.error(
+                                  error instanceof Error
+                                    ? error.message
+                                    : "Failed to upload favicon"
+                                );
                               } finally {
                                 setFaviconUploading(false);
                                 if (faviconFileInputRef.current) {
@@ -1107,28 +1129,28 @@ export default function SiteSettingsPage() {
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Favicon URL</label>
-                      <Input
-                        placeholder="https://example.com/favicon.png"
-                        value={faviconPreview || ""}
-                        onChange={(e) => {
-                          setFaviconPreview(e.target.value);
-                        }}
-                        onBlur={(e) => {
-                          const url = e.target.value.trim();
-                          if (url) {
-                            faviconMutation.mutate({ favicon: url });
-                          } else if (!url && faviconPreview) {
-                            faviconMutation.mutate({ favicon: "" });
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.currentTarget.blur();
-                          }
-                        }}
-                      />
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="https://example.com/favicon.png"
+                          value={faviconPreview || ""}
+                          onChange={(e) => {
+                            setFaviconPreview(e.target.value);
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="default"
+                          disabled={faviconMutation.isPending}
+                          onClick={() => {
+                            const url = faviconPreview?.trim() || "";
+                            faviconMutation.mutate({ favicon: url || undefined });
+                          }}
+                        >
+                          {faviconMutation.isPending ? "Saving..." : "Save"}
+                        </Button>
+                      </div>
                       <p className="text-sm text-muted-foreground">
-                        Or paste an image URL directly (press Enter or click away to save)
+                        Or paste an image URL directly and click Save
                       </p>
                     </div>
                   </CardContent>
