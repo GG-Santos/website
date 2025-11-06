@@ -37,7 +37,7 @@ export async function AboutSectionServer() {
     // Silently handle errors during prerendering or when database is unavailable
     // This prevents the page from crashing during static generation
     if (process.env.NODE_ENV === "development") {
-      console.error("Error fetching testimonials or site settings:", error);
+    console.error("Error fetching testimonials or site settings:", error);
     }
     // Return empty testimonials array on error with default about section
     return (

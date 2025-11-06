@@ -407,11 +407,11 @@ export default function AccountPage() {
                       variant="outline"
                       onClick={() => {
                         // Open the consent dialog by finding and clicking the dialog trigger
-                        const dialogTrigger = document.querySelector('[data-c15t-dialog-trigger]') as HTMLElement;
-                        if (dialogTrigger) {
-                          dialogTrigger.click();
-                        } else {
-                          toast.info("Please use the cookie banner to manage your preferences");
+                          const dialogTrigger = document.querySelector('[data-c15t-dialog-trigger]') as HTMLElement;
+                          if (dialogTrigger) {
+                            dialogTrigger.click();
+                          } else {
+                            toast.info("Please use the cookie banner to manage your preferences");
                         }
                       }}
                       className="w-full"

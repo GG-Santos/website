@@ -25,36 +25,36 @@ export const blogRouter = router({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const where = {
-          published: true,
-          ...(input.category && { categories: { has: input.category } }),
-        };
+      const where = {
+        published: true,
+        ...(input.category && { categories: { has: input.category } }),
+      };
 
-        const [posts, total] = await Promise.all([
-          ctx.prisma.blogPost.findMany({
-            where,
-            include: {
-              author: {
-                select: {
-                  id: true,
-                  name: true,
-                  image: true,
-                  bio: true,
-                },
+      const [posts, total] = await Promise.all([
+        ctx.prisma.blogPost.findMany({
+          where,
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                bio: true,
               },
             },
-            orderBy: { createdAt: "desc" },
-            take: input.limit,
-            skip: input.offset,
-          }),
-          ctx.prisma.blogPost.count({ where }),
-        ]);
+          },
+          orderBy: { createdAt: "desc" },
+          take: input.limit,
+          skip: input.offset,
+        }),
+        ctx.prisma.blogPost.count({ where }),
+      ]);
 
-        return {
-          posts,
-          total,
-          hasMore: input.offset + input.limit < total,
-        };
+      return {
+        posts,
+        total,
+        hasMore: input.offset + input.limit < total,
+      };
       } catch (error) {
         console.error("Error fetching published blog posts:", error);
         // Return empty results instead of throwing to prevent 500 errors
