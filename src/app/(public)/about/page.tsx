@@ -1,3 +1,4 @@
+import { unstable_noStore } from "next/cache";
 import { AboutSectionServer } from "@/components/public/about-section-server";
 import { PageBannerServer } from "@/components/public/page-banner-server";
 import { getSiteSettings } from "@/lib/site-settings-server";
@@ -131,6 +132,9 @@ async function AboutPageImage() {
 }
 
 export default async function AboutPage() {
+  // Mark as dynamic to prevent static generation issues with tRPC server client
+  unstable_noStore();
+  
   return (
     <div className="min-h-screen bg-background">
       <PageBannerServer
