@@ -421,7 +421,7 @@ export default function SiteSettingsPage() {
     setValue: (url: string) => void,
     setPreview: (url: string) => void,
     setUploading: (uploading: boolean) => void,
-    fileInputRef?: React.RefObject<HTMLInputElement>,
+    fileInputRef?: React.RefObject<HTMLInputElement | null>,
   ) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload a valid image file");
