@@ -39,7 +39,7 @@ const gameObjectiveSchema = z.object({
   order: z.number().int().min(0).default(0),
 });
 
-type GameObjectiveForm = z.infer<typeof gameObjectiveSchema>;
+type GameObjectiveForm = z.input<typeof gameObjectiveSchema>;
 
 export default function GameObjectiveEditPage() {
   const router = useRouter();

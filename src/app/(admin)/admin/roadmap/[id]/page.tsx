@@ -47,7 +47,7 @@ const roadmapItemSchema = z.object({
   tags: z.string(),
 });
 
-type RoadmapItemForm = z.infer<typeof roadmapItemSchema>;
+type RoadmapItemForm = z.input<typeof roadmapItemSchema>;
 
 export default function RoadmapEditPage() {
   const router = useRouter();

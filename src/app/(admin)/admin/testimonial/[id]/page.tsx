@@ -41,7 +41,7 @@ const testimonialSchema = z.object({
   order: z.number().int().min(0).default(0),
 });
 
-type TestimonialForm = z.infer<typeof testimonialSchema>;
+type TestimonialForm = z.input<typeof testimonialSchema>;
 
 export default function TestimonialEditPage() {
   const router = useRouter();

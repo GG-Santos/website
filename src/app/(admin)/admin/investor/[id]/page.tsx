@@ -39,7 +39,7 @@ const investorSchema = z.object({
   order: z.number().int().min(0).default(0),
 });
 
-type InvestorForm = z.infer<typeof investorSchema>;
+type InvestorForm = z.input<typeof investorSchema>;
 
 export default function InvestorEditPage() {
   const router = useRouter();
