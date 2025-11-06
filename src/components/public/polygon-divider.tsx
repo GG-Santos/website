@@ -21,7 +21,6 @@ export function PolygonDivider({
       viewBox="0 0 1920 59"
       className={`fn__svg fn__divider ${position === "top" ? "top_divider" : "bottom_divider"} replaced-svg ${className}`}
       style={{
-        enableBackground: "new 0 0 1920 59" as any, // SVG-specific attribute
         position: "absolute",
         left: 0,
         right: 0,
