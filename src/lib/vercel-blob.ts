@@ -16,7 +16,7 @@ export async function uploadToBlob(
   file: File | Blob,
   filename?: string,
 ): Promise<string> {
-  const blob = await put(filename || file.name, file, {
+  const blob = await put(filename || (file instanceof File ? file.name : "blob"), file, {
     access: "public",
     token: BLOB_STORE_TOKEN,
   });
