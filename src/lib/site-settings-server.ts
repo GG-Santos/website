@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_noStore } from "next/cache";
 import { z } from "zod";
 import {
   pageKeySchema,
@@ -234,6 +234,9 @@ async function migrateSiteSettingsDocument(): Promise<void> {
 }
 
 export async function getSiteSettings(): Promise<SiteSettingsServer> {
+  // Mark as dynamic to allow new Date() usage
+  unstable_noStore();
+  
   try {
     const record = await prisma.siteSettings.findUnique({
       where: { id: siteSettingsId },
