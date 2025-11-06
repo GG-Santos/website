@@ -1,3 +1,4 @@
+import { unstable_noStore } from "next/cache";
 import { PublicHeader } from "@/components/layouts/public/header";
 import { PublicFooter } from "@/components/layouts/public/footer";
 import { getSiteSettings } from "@/lib/site-settings-server";
@@ -17,6 +18,8 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Mark as dynamic to allow database access and new Date() usage
+  unstable_noStore();
   const settings = await getSiteSettings();
 
   return (
