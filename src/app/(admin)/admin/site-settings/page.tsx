@@ -179,9 +179,6 @@ export default function SiteSettingsPage() {
     },
   });
 
-  const [faviconPreview, setFaviconPreview] = useState<string>("");
-  const [faviconUploading, setFaviconUploading] = useState(false);
-  const faviconFileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [heroPreview, setHeroPreview] = useState<string>("");
   const [heroUploading, setHeroUploading] = useState(false);
@@ -288,16 +285,6 @@ export default function SiteSettingsPage() {
     },
   });
 
-  const faviconMutation = trpc.siteSettings.updateFavicon.useMutation({
-    onSuccess: (data) => {
-      toast.success("Favicon updated successfully");
-      setFaviconPreview(data.favicon ?? "");
-      utils.siteSettings.get.invalidate();
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update favicon");
-    },
-  });
 
   useEffect(() => {
     if (!settings) {
@@ -956,206 +943,66 @@ export default function SiteSettingsPage() {
               </form>
             </Form>
 
-            {/* Metadata and Favicon Form */}
-            <div className="grid gap-6 md:grid-cols-[1fr_400px]">
-              <div className="space-y-6">
-                <Form {...metadataForm}>
-                  <form
-                    className="space-y-6"
-                    onSubmit={metadataForm.handleSubmit((values) => {
-                      metadataMutation.mutate(values);
-                    })}
-                  >
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Site Metadata</CardTitle>
-                        <CardDescription>
-                          Configure the site title and description used in SEO and browser tabs
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <FormField
-                          control={metadataForm.control}
-                          name="title"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Site Title</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Juanito Bayani" {...field} />
-                              </FormControl>
-                              <FormDescription>
-                                This appears in browser tabs and search results
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={metadataForm.control}
-                          name="description"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Site Description</FormLabel>
-                              <FormControl>
-                                <Textarea
-                                  placeholder="An Underdogs Studios Production"
-                                  rows={3}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormDescription>
-                                This appears in search engine results
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button disabled={metadataMutation.isPending} type="submit">
-                          {metadataMutation.isPending ? "Saving..." : "Save Metadata"}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </form>
-                </Form>
-              </div>
-
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Favicon</CardTitle>
-                    <CardDescription>
-                      Upload a favicon image (recommended: 32x32 or 64x64 PNG)
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {faviconPreview ? (
-                      <div className="relative aspect-square w-full overflow-hidden rounded-lg border">
-                        <Image
-                          src={faviconPreview}
-                          alt="Favicon preview"
-                          fill
-                          className="object-contain"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={() => {
-                            setFaviconPreview("");
-                            faviconMutation.mutate({ favicon: "" });
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center aspect-square border-2 border-dashed rounded-lg">
-                        <div className="text-center">
-                          <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                          <p className="text-sm text-muted-foreground mb-2">
-                            Upload a favicon
-                          </p>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            ref={faviconFileInputRef}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-
-                              if (!file.type.startsWith("image/")) {
-                                toast.error("Please upload an image file");
-                                return;
-                              }
-
-                              if (file.size > 5 * 1024 * 1024) {
-                                toast.error("Image size must be less than 5MB");
-                                return;
-                              }
-
-                              setFaviconUploading(true);
-                              try {
-                                const formData = new FormData();
-                                formData.append("file", file);
-                                formData.append("folder", "favicon");
-
-                                const response = await fetch("/api/upload", {
-                                  method: "POST",
-                                  body: formData,
-                                });
-
-                                if (!response.ok) {
-                                  const errorText = await response.text();
-                                  throw new Error(errorText || "Upload failed");
-                                }
-
-                                const data = await response.json();
-                                if (!data.url) {
-                                  throw new Error("No URL returned from upload");
-                                }
-                                
-                                setFaviconPreview(data.url);
-                                // Save automatically after upload
-                                faviconMutation.mutate({ favicon: data.url });
-                                toast.success("Favicon uploaded and saved");
-                              } catch (error) {
-                                console.error("Upload error:", error);
-                                toast.error(
-                                  error instanceof Error
-                                    ? error.message
-                                    : "Failed to upload favicon"
-                                );
-                              } finally {
-                                setFaviconUploading(false);
-                                if (faviconFileInputRef.current) {
-                                  faviconFileInputRef.current.value = "";
-                                }
-                              }
-                            }}
-                            className="hidden"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            disabled={faviconUploading}
-                            onClick={() => faviconFileInputRef.current?.click()}
-                          >
-                            {faviconUploading ? "Uploading..." : "Choose File"}
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Favicon URL</label>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="https://example.com/favicon.png"
-                          value={faviconPreview || ""}
-                          onChange={(e) => {
-                            setFaviconPreview(e.target.value);
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="default"
-                          disabled={faviconMutation.isPending}
-                          onClick={() => {
-                            const url = faviconPreview?.trim() || "";
-                            faviconMutation.mutate({ favicon: url || undefined });
-                          }}
-                        >
-                          {faviconMutation.isPending ? "Saving..." : "Save"}
-                        </Button>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Or paste an image URL directly and click Save
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+            {/* Metadata Form */}
+            <div className="space-y-6">
+              <Form {...metadataForm}>
+                <form
+                  className="space-y-6"
+                  onSubmit={metadataForm.handleSubmit((values) => {
+                    metadataMutation.mutate(values);
+                  })}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Site Metadata</CardTitle>
+                      <CardDescription>
+                        Configure the site title and description used in SEO and browser tabs
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <FormField
+                        control={metadataForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Site Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Juanito Bayani" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              This appears in browser tabs and search results
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={metadataForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Site Description</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="An Underdogs Studios Production"
+                                rows={3}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              This appears in search engine results
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button disabled={metadataMutation.isPending} type="submit">
+                        {metadataMutation.isPending ? "Saving..." : "Save Metadata"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </form>
+              </Form>
             </div>
           </div>
         )}
