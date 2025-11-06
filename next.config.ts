@@ -17,7 +17,10 @@ const nextConfig: NextConfig = {
   },
   // Include lightningcss native modules for Tailwind CSS v4
   outputFileTracingIncludes: {
-    "/*": ["./node_modules/lightningcss/**/*"],
+    "/*": [
+      "./node_modules/lightningcss/**/*",
+      "./node_modules/lightningcss-linux-x64-gnu/**/*",
+    ],
   },
   // Note: Rewrites are not needed since we're using App Router API routes
   // The API route at /api/c15t/[...all] handles all c15t requests directly
