@@ -45,7 +45,7 @@ const blogPostSchema = z.object({
   tags: z.string(),
 });
 
-type BlogPostForm = z.infer<typeof blogPostSchema>;
+type BlogPostForm = z.input<typeof blogPostSchema>;
 
 export default function BlogEditPage() {
   const router = useRouter();
