@@ -4,6 +4,16 @@ const globalForPrisma = global as unknown as {
   prisma: PrismaClient;
 };
 
+// Validate DATABASE_URL is set
+if (!process.env.DATABASE_URL) {
+  console.error(
+    "❌ DATABASE_URL environment variable is not set. Please set it in your Vercel project settings."
+  );
+  throw new Error(
+    "DATABASE_URL environment variable is required. Please configure it in Vercel project settings."
+  );
+}
+
 const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({

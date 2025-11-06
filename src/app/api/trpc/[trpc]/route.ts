@@ -8,14 +8,33 @@ const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext,
-    onError:
-      process.env.NODE_ENV === "development"
-        ? ({ path, error }) => {
-            console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
-            );
-          }
-        : undefined,
+    onError: ({ path, error }) => {
+      // Always log errors, but with different detail levels
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`,
+          error
+        );
+      } else {
+        // In production, log errors to help diagnose issues
+        console.error(
+          `❌ tRPC error on ${path ?? "<no-path>"}: ${error.message}`
+        );
+        // Log full error details if it's a database connection issue
+        if (
+          error.message.includes("DATABASE_URL") ||
+          error.message.includes("connection") ||
+          error.message.includes("Prisma") ||
+          error.cause
+        ) {
+          console.error("Database connection error details:", {
+            message: error.message,
+            code: error.code,
+            cause: error.cause,
+          });
+        }
+      }
+    },
   });
 
 export { handler as GET, handler as POST };

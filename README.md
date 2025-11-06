@@ -112,6 +112,53 @@ This project uses MongoDB with Prisma ORM. The Prisma Client is generated to `./
 
 Authentication is handled by Better Auth. Configure your authentication settings in the environment variables.
 
+## 🚀 Deployment
+
+### Vercel Deployment
+
+1. **Connect your repository to Vercel:**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your GitHub repository
+
+2. **Configure Environment Variables:**
+   - In your Vercel project settings, go to "Environment Variables"
+   - Add the following **required** variables:
+     - `DATABASE_URL` - Your MongoDB connection string (e.g., `mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority`)
+     - `BETTER_AUTH_SECRET` - A secure random string for authentication (generate with `npm run auth:secret`)
+     - `BETTER_AUTH_URL` - Your production URL (e.g., `https://your-domain.vercel.app`)
+     - `NEXT_PUBLIC_APP_URL` - Your production URL (same as `BETTER_AUTH_URL`)
+     - `NEXT_PUBLIC_SITE_NAME` - Your site name (optional, defaults to "website")
+   
+   **Important:** Make sure `DATABASE_URL` is set correctly. If it's missing or incorrect, the site will load but database queries will fail silently.
+
+3. **Deploy:**
+   - Vercel will automatically build and deploy on every push to your main branch
+   - Check the build logs to ensure `prisma generate` runs successfully
+   - Monitor the function logs for any database connection errors
+
+### Troubleshooting Database Connection Issues
+
+If your site loads but database content doesn't appear:
+
+1. **Check Environment Variables:**
+   - Verify `DATABASE_URL` is set in Vercel project settings
+   - Ensure the connection string is correct and includes authentication credentials
+   - For MongoDB Atlas, make sure your IP address is whitelisted (or use `0.0.0.0/0` for all IPs)
+
+2. **Check Build Logs:**
+   - Look for errors during `prisma generate` step
+   - Check for "DATABASE_URL environment variable is not set" errors
+
+3. **Check Function Logs:**
+   - In Vercel dashboard, go to your deployment → Functions → View logs
+   - Look for tRPC errors or Prisma connection errors
+   - The improved error logging will show detailed connection issues
+
+4. **Test Database Connection:**
+   - Run `npm run db:test` locally to verify your connection string works
+   - Ensure your MongoDB cluster is accessible from the internet
+
 ## 🎨 Styling
 
 - **Tailwind CSS v4** - Utility-first CSS framework
