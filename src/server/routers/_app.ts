@@ -7,7 +7,7 @@ import { gameAssetRouter } from "./game-asset";
 import { gameObjectiveRouter } from "./game-objective";
 import { testimonialRouter } from "./testimonial";
 import { siteSettingsRouter } from "./site-settings";
-import { investorRouter } from "./investor";
+import { techstackRouter } from "./techstack";
 
 export const appRouter = router({
   user: userRouter,
@@ -18,7 +18,7 @@ export const appRouter = router({
   gameObjective: gameObjectiveRouter,
   testimonial: testimonialRouter,
   siteSettings: siteSettingsRouter,
-  investor: investorRouter,
+  techstack: techstackRouter,
 });
 
 export type AppRouter = typeof appRouter;

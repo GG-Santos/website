@@ -66,7 +66,7 @@ const data = {
     },
     {
       title: "Techstack",
-      url: "/admin/investor",
+      url: "/admin/techstack",
       icon: Building2,
     },
     {

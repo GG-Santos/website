@@ -183,6 +183,8 @@ model SiteSettings {
   homeSections        Json      // { about, features, collection, investors, blog }
   aboutHomeSection    Json?     // { title: string, description: string, image: string }
   aboutPage           Json?     // { image: string, team: Array<{name, title, imageUrl, socialLinks?}> }
+  metadata            Json?     // { title: string, description: string }
+  favicon             String?   // Vercel Blob URL for favicon
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @default(now()) @updatedAt
 

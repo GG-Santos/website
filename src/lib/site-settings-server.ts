@@ -111,6 +111,11 @@ const defaultSiteSettings: SiteSettingsCore = {
       },
     ],
   },
+  metadata: {
+    title: "Juanito Bayani",
+    description: "An Underdogs Studios Production",
+  },
+  favicon: undefined,
 };
 
 type SiteSettingsUpdate = Partial<
@@ -257,6 +262,8 @@ export async function getSiteSettings(): Promise<SiteSettingsServer> {
           homeSections: defaultSiteSettings.homeSections as never,
           aboutHomeSection: defaultSiteSettings.aboutHomeSection as never,
           aboutPage: defaultSiteSettings.aboutPage as never,
+          metadata: defaultSiteSettings.metadata as never,
+          favicon: defaultSiteSettings.favicon || null,
         },
       });
 
@@ -269,6 +276,8 @@ export async function getSiteSettings(): Promise<SiteSettingsServer> {
         homeSections: created.homeSections as SiteSettingsServer["homeSections"],
         aboutHomeSection: (created.aboutHomeSection as SiteSettingsServer["aboutHomeSection"]) || defaultSiteSettings.aboutHomeSection,
         aboutPage: (created.aboutPage as SiteSettingsServer["aboutPage"]) || defaultSiteSettings.aboutPage,
+        metadata: (created.metadata as SiteSettingsServer["metadata"]) || defaultSiteSettings.metadata,
+        favicon: created.favicon || defaultSiteSettings.favicon,
         createdAt: created.createdAt,
         updatedAt: created.updatedAt,
       };
@@ -306,6 +315,8 @@ export async function getSiteSettings(): Promise<SiteSettingsServer> {
             team: ((record.aboutPage as SiteSettingsServer["aboutPage"]).team || defaultSiteSettings.aboutPage.team).slice(0, 9),
           }
         : defaultSiteSettings.aboutPage,
+      metadata: (record.metadata as SiteSettingsServer["metadata"]) || defaultSiteSettings.metadata,
+      favicon: record.favicon || defaultSiteSettings.favicon,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     };

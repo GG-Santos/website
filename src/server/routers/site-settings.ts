@@ -120,6 +120,31 @@ export const siteSettingsRouter = router({
 
       return settings.aboutPage;
     }),
+
+  updateMetadata: protectedProcedure
+    .input(z.object({
+      title: z.string().min(1),
+      description: z.string().min(1),
+    }))
+    .mutation(async ({ input }) => {
+      const settings = await updateSiteSettings({
+        metadata: input,
+      });
+
+      return settings.metadata;
+    }),
+
+  updateFavicon: protectedProcedure
+    .input(z.object({
+      favicon: z.string().url().optional(),
+    }))
+    .mutation(async ({ input }) => {
+      const settings = await updateSiteSettings({
+        favicon: input.favicon || undefined,
+      });
+
+      return { favicon: settings.favicon };
+    }),
 });
 
 

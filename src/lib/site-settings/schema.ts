@@ -100,6 +100,13 @@ export const siteSettingsCoreSchema = z.object({
   homeSections: homeSectionsSchema,
   aboutHomeSection: aboutHomeSectionSchema,
   aboutPage: aboutPageSchema,
+  // Site metadata
+  metadata: z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+  }).optional(),
+  // Favicon stored in Vercel Blob
+  favicon: z.string().url().optional(),
 });
 
 export type PageKey = z.infer<typeof pageKeySchema>;

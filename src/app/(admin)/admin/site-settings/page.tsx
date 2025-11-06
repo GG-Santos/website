@@ -168,6 +168,21 @@ export default function SiteSettingsPage() {
     },
   });
 
+  const metadataForm = useForm<{ title: string; description: string }>({
+    resolver: zodResolver(z.object({
+      title: z.string().min(1),
+      description: z.string().min(1),
+    })),
+    defaultValues: {
+      title: "",
+      description: "",
+    },
+  });
+
+  const [faviconPreview, setFaviconPreview] = useState<string>("");
+  const [faviconUploading, setFaviconUploading] = useState(false);
+  const faviconFileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [heroPreview, setHeroPreview] = useState<string>("");
   const [heroUploading, setHeroUploading] = useState(false);
   const heroFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -256,6 +271,31 @@ export default function SiteSettingsPage() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update homepage sections");
+    },
+  });
+
+  const metadataMutation = trpc.siteSettings.updateMetadata.useMutation({
+    onSuccess: (data) => {
+      toast.success("Metadata updated successfully");
+      metadataForm.reset({
+        title: data?.title ?? "",
+        description: data?.description ?? "",
+      });
+      utils.siteSettings.get.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update metadata");
+    },
+  });
+
+  const faviconMutation = trpc.siteSettings.updateFavicon.useMutation({
+    onSuccess: (data) => {
+      toast.success("Favicon updated successfully");
+      setFaviconPreview(data.favicon ?? "");
+      utils.siteSettings.get.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update favicon");
     },
   });
 
