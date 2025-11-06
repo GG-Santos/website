@@ -601,6 +601,7 @@ export default function RoadmapEditPage() {
                           <FormControl>
                             <Input
                               {...field}
+                              value={field.value || ""}
                               placeholder="https://youtube.com/watch?v=... or video ID"
                               onChange={(e) => {
                                 const videoId = extractYouTubeId(e.target.value);
