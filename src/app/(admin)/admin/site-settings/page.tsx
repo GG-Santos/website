@@ -955,6 +955,137 @@ export default function SiteSettingsPage() {
                 </div>
               </form>
             </Form>
+
+            {/* Metadata Form */}
+            <Form {...metadataForm}>
+              <form
+                className="space-y-6"
+                onSubmit={metadataForm.handleSubmit((values) => {
+                  metadataMutation.mutate(values);
+                })}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Site Metadata</CardTitle>
+                    <CardDescription>
+                      Configure the site title and description used in SEO and browser tabs
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={metadataForm.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Site Title</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Juanito Bayani" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            This appears in browser tabs and search results
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={metadataForm.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Site Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="An Underdogs Studios Production"
+                              rows={3}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            This appears in search engine results
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button disabled={metadataMutation.isPending} type="submit">
+                      {metadataMutation.isPending ? "Saving..." : "Save Metadata"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </form>
+            </Form>
+
+            {/* Favicon Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Favicon</CardTitle>
+                <CardDescription>
+                  Upload a favicon image (recommended: 32x32 or 64x64 PNG)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {faviconPreview ? (
+                  <div className="relative inline-block">
+                    <div className="relative h-16 w-16 overflow-hidden rounded border">
+                      <Image
+                        src={faviconPreview}
+                        alt="Favicon preview"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -right-2 -top-2 h-6 w-6"
+                      onClick={() => {
+                        setFaviconPreview("");
+                        faviconMutation.mutate({ favicon: "" });
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center border-2 border-dashed rounded-lg p-8">
+                    <div className="text-center">
+                      <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Upload a favicon
+                      </p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={faviconFileInputRef}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          await handleImageUpload(
+                            file,
+                            "favicon",
+                            (url) => faviconMutation.mutate({ favicon: url }),
+                            setFaviconPreview,
+                            setFaviconUploading,
+                            faviconFileInputRef,
+                          );
+                        }}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={faviconUploading}
+                        onClick={() => faviconFileInputRef.current?.click()}
+                      >
+                        {faviconUploading ? "Uploading..." : "Choose File"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
