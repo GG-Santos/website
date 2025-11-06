@@ -13,11 +13,19 @@ export async function generateStaticParams() {
       offset: 0,
     });
     
-    return items.map((item) => ({
+    const params = items.map((item) => ({
       slug: item.slug,
     }));
+    
+    // When using Cache Components, must return at least one result
+    if (params.length === 0) {
+      return [{ slug: "placeholder" }];
+    }
+    
+    return params;
   } catch {
-    return [];
+    // Return a placeholder to satisfy Cache Components requirement
+    return [{ slug: "placeholder" }];
   }
 }
 
