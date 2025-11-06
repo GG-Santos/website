@@ -26,8 +26,7 @@
       "@server/*": ["./src/server/*"],
       "@features/*": ["./src/features/*"],
       "@test/*": ["./src/test/*"],
-      "@source/*": ["./.source/*"],
-      "@/generated/*": ["./src/generated/*"]
+      "@source/*": ["./.source/*"]
     },
     "strictNullChecks": true,
     "types": ["vitest", "node"]

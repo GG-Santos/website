@@ -43,8 +43,7 @@ next-env.d.ts
 *storybook.log
 storybook-static
 
-# prisma generated
-/src/generated/prisma
+# prisma generated (now in node_modules/.prisma/client, already covered by /node_modules)
 
 # fumadocs
 /.source

@@ -1,6 +1,6 @@
 import { defineConfig } from '@c15t/backend/v2';
 import { prismaAdapter } from '@c15t/backend/v2/db/adapters/prisma';
-import { PrismaClient } from './src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({
 	log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
