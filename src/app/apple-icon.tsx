@@ -1,5 +1,10 @@
 import { getSiteSettings } from "@/lib/site-settings-server";
 import { ImageResponse } from "next/og";
+import { unstable_noStore } from "next/cache";
+
+// Mark as dynamic to prevent static generation
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 // Image metadata
 export const size = {
@@ -10,6 +15,7 @@ export const contentType = "image/png";
 
 // Generate apple-icon dynamically from database
 export default async function AppleIcon() {
+  unstable_noStore();
   try {
     const settings = await getSiteSettings();
     
