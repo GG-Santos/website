@@ -1,6 +1,5 @@
 import { getSiteSettings } from "@/lib/site-settings-server";
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
 
 // Image metadata
 export const size = {
@@ -10,7 +9,7 @@ export const size = {
 export const contentType = "image/png";
 
 // Generate apple-icon dynamically from database
-export default async function AppleIcon(request: NextRequest) {
+export default async function AppleIcon() {
   try {
     const settings = await getSiteSettings();
     

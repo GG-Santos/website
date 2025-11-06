@@ -1,6 +1,5 @@
 import { getSiteSettings } from "@/lib/site-settings-server";
 import { ImageResponse } from "next/og";
-import { NextRequest } from "next/server";
 
 // Image metadata
 export const size = {
@@ -10,7 +9,7 @@ export const size = {
 export const contentType = "image/png";
 
 // Generate icon dynamically from database
-export default async function Icon(request: NextRequest) {
+export default async function Icon() {
   try {
     const settings = await getSiteSettings();
     
