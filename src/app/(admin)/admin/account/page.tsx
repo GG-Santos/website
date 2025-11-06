@@ -41,7 +41,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc/client";
-import { useConsentManager } from "@c15t/nextjs";
 
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(50),
@@ -63,7 +62,6 @@ export default function AccountPage() {
   const [profilePreview, setProfilePreview] = useState<string>("");
   const [profileUploading, setProfileUploading] = useState(false);
   const profileFileInputRef = useRef<HTMLInputElement | null>(null);
-  const consentManager = useConsentManager();
 
   // Fetch user profile
   const { data: profile, isLoading: isLoadingProfile } = trpc.user.getProfile.useQuery(
