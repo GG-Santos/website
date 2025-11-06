@@ -2,20 +2,11 @@ import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 
 const withMDX = createMDX();
-const sassOptions = {
-  additionalData: `
-    $var: red;
-  `,
-};
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   cacheComponents: true,
-  sassOptions: {
-    ...sassOptions,
-    implementation: "sass-embedded",
-  },
   images: {
     remotePatterns: [
       {
