@@ -1,0 +1,9 @@
+{
+  "title": "Documentation",
+  "description": "Complete documentation for your project",
+  "pages": [
+    "index"
+  ],
+  "defaultOpen": true
+}
+

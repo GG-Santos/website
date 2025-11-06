@@ -1,22 +1,22 @@
-// vitest.setup.ts
-import "@testing-library/jest-dom";
+import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { afterAll, afterEach, beforeAll } from "vitest";
+import { server } from "./src/mocks/node";
 
-// --- MSW (node) ---
-import { server } from "@/mocks/node";
-
+// Start MSW server before all tests
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: "warn" });
+  server.listen({
+    onUnhandledRequest: "warn",
+  });
 });
+
+// Reset handlers after each test
 afterEach(() => {
   server.resetHandlers();
   cleanup();
 });
-afterAll(() => server.close());
 
-vi.mock("next/navigation", async () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
-  usePathname: () => "/",
-  useSearchParams: () => new URLSearchParams(),
-}));
+// Clean up after all tests are done
+afterAll(() => {
+  server.close();
+});

@@ -1,0 +1,103 @@
+model subject {
+  id String @map("_id")
+  isIdentified Boolean
+  externalId String?
+  identityProvider String?
+  lastIpAddress String?
+  subjectTimezone String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  consents consent[] @relation("consent_subject")
+  consentRecords consentRecord[] @relation("consentRecord_subject")
+  auditLogs auditLog[] @relation("auditLog_subject")
+}
+
+model domain {
+  id String @map("_id")
+  name String @unique
+  description String?
+  allowedOrigins Json?
+  isVerified Boolean
+  isActive Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  consents consent[] @relation("consent_domain")
+}
+
+model consentPolicy {
+  id String @map("_id")
+  version String
+  type String
+  name String
+  effectiveDate DateTime
+  expirationDate DateTime?
+  content String
+  contentHash String
+  isActive Boolean
+  createdAt DateTime @default(now())
+  consents consent[] @relation("consent_consentPolicy")
+}
+
+model consentPurpose {
+  id String @map("_id")
+  code String
+  name String
+  description String
+  isEssential Boolean
+  dataCategory String?
+  legalBasis String?
+  isActive Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model consent {
+  id String @map("_id")
+  subjectId String
+  domainId String
+  policyId String?
+  purposeIds Json
+  metadata Json?
+  ipAddress String?
+  userAgent String?
+  status String
+  withdrawalReason String?
+  givenAt DateTime @default(now())
+  validUntil DateTime?
+  isActive Boolean
+  subject subject @relation("consent_subject", fields: [subjectId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+  domain domain @relation("consent_domain", fields: [domainId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+  policy consentPolicy? @relation("consent_consentPolicy", fields: [policyId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+  consentRecords consentRecord[] @relation("consentRecord_consent")
+}
+
+model auditLog {
+  id String @map("_id")
+  entityType String
+  entityId String
+  actionType String
+  subjectId String?
+  ipAddress String?
+  userAgent String?
+  changes Json?
+  metadata Json?
+  createdAt DateTime @default(now())
+  eventTimezone String
+  subject subject? @relation("auditLog_subject", fields: [subjectId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+}
+
+model consentRecord {
+  id String @map("_id")
+  subjectId String
+  consentId String?
+  actionType String
+  details Json?
+  createdAt DateTime @default(now())
+  subject subject @relation("consentRecord_subject", fields: [subjectId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+  consent consent? @relation("consentRecord_consent", fields: [consentId], references: [id], onUpdate: Restrict, onDelete: Restrict)
+}
+
+model private_c15t_settings {
+  key String @map("_id") @id
+  value String @default("1.0.0")
+}
