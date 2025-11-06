@@ -45,8 +45,8 @@ storybook-static
 *.stories.tsx
 *.stories.ts
 
-# prisma generated client (committed to version control per Prisma Vercel deployment guide)
-# /generated/client
+# prisma generated client (generated during build on Vercel)
+/generated/client
 
 # fumadocs
 /.source

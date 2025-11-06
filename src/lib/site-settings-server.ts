@@ -178,6 +178,9 @@ async function migrateSiteSettingsDocument(): Promise<void> {
       heroBackgroundImage?: string;
     };
 
+    // Get current date after database access (required for Next.js Cache Components)
+    const now = new Date();
+    
     // Migrate to new schema
     const migratedDoc = {
       _id: oldDoc._id,
@@ -198,8 +201,8 @@ async function migrateSiteSettingsDocument(): Promise<void> {
       homeSections: oldDoc.homeSections ?? defaultSiteSettings.homeSections,
       aboutHomeSection: (oldDoc as { aboutHomeSection?: unknown | null }).aboutHomeSection ?? defaultSiteSettings.aboutHomeSection,
       aboutPage: (oldDoc as { aboutPage?: unknown | null }).aboutPage ?? defaultSiteSettings.aboutPage,
-      createdAt: oldDoc.createdAt ? new Date(oldDoc.createdAt) : new Date(),
-      updatedAt: new Date(),
+      createdAt: oldDoc.createdAt ? new Date(oldDoc.createdAt) : now,
+      updatedAt: now,
     };
 
     // Delete old document and create new one with correct schema
@@ -367,11 +370,13 @@ export async function getSiteSettings(): Promise<SiteSettingsServer> {
     }
 
     // Return defaults if database fails
+    // Get current date after attempting database access (required for Next.js Cache Components)
+    const now = new Date();
     return {
       _id: siteSettingsId,
       ...defaultSiteSettings,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: now,
+      updatedAt: now,
     };
   }
 }
