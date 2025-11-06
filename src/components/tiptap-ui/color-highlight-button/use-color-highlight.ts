@@ -202,7 +202,7 @@ export function removeHighlight(
   if (mode === "mark") {
     return editor.chain().focus().unsetMark("highlight").run()
   } else {
-    return editor.chain().focus().unsetNodeBackgroundColor().run()
+    return (editor.chain().focus() as any).unsetNodeBackgroundColor().run()
   }
 }
 
