@@ -14,9 +14,9 @@ async function testSignup() {
     const collections = await prisma.$runCommandRaw({
       listCollections: 1,
     });
-    const collectionNames = collections.cursor.firstBatch.map(
+    const collectionNames = collections.cursor?.firstBatch?.map(
       (c: any) => c.name
-    );
+    ) || [];
     console.log("   Found collections:", collectionNames.join(", "));
 
     const requiredCollections = ["users", "accounts", "sessions"];
