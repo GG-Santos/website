@@ -185,7 +185,7 @@ async function migrateSiteSettingsDocument(): Promise<void> {
 
     // Get current date after database access (required for Next.js Cache Components)
     const now = new Date();
-    
+
     // Migrate to new schema
     const migratedDoc = {
       _id: oldDoc._id,
@@ -238,6 +238,98 @@ async function migrateSiteSettingsDocument(): Promise<void> {
     });
   } catch (migrateError) {
     console.error("Migration failed, will try to continue:", migrateError);
+  }
+}
+
+// Cached version for metadata generation (allows static generation)
+export async function getSiteSettingsCached(): Promise<SiteSettingsServer> {
+  "use cache";
+  
+  try {
+    const record = await prisma.siteSettings.findUnique({
+      where: { id: siteSettingsId },
+    });
+
+    if (!record) {
+      // Create default settings
+      const created = await prisma.siteSettings.create({
+        data: {
+          id: siteSettingsId,
+          heroBackgroundImage: defaultSiteSettings.heroBackgroundImage,
+          header: defaultSiteSettings.header as never,
+          pages: defaultSiteSettings.pages as never,
+          footer: defaultSiteSettings.footer as never,
+          homeSections: defaultSiteSettings.homeSections as never,
+          aboutHomeSection: defaultSiteSettings.aboutHomeSection as never,
+          aboutPage: defaultSiteSettings.aboutPage as never,
+          metadata: defaultSiteSettings.metadata as never,
+          favicon: defaultSiteSettings.favicon || null,
+        },
+      });
+
+      return {
+        _id: created.id,
+        heroBackgroundImage: created.heroBackgroundImage,
+        header: created.header as SiteSettingsServer["header"],
+        pages: created.pages as SiteSettingsServer["pages"],
+        footer: created.footer as SiteSettingsServer["footer"],
+        homeSections: created.homeSections as SiteSettingsServer["homeSections"],
+        aboutHomeSection: (created.aboutHomeSection as SiteSettingsServer["aboutHomeSection"]) || defaultSiteSettings.aboutHomeSection,
+        aboutPage: (created.aboutPage as SiteSettingsServer["aboutPage"]) || defaultSiteSettings.aboutPage,
+        metadata: (created.metadata as SiteSettingsServer["metadata"]) || defaultSiteSettings.metadata,
+        favicon: created.favicon || defaultSiteSettings.favicon,
+        createdAt: created.createdAt,
+        updatedAt: created.updatedAt,
+      };
+    }
+
+    // Merge with defaults to ensure all fields exist
+    const settings: SiteSettingsServer = {
+      _id: record.id,
+      heroBackgroundImage: record.heroBackgroundImage || defaultSiteSettings.heroBackgroundImage,
+      header: deepMerge(
+        defaultSiteSettings.header,
+        (record.header as SiteSettingsServer["header"]) || {},
+      ),
+      pages: deepMerge(
+        defaultSiteSettings.pages,
+        (record.pages as SiteSettingsServer["pages"]) || {},
+      ),
+      footer: deepMerge(
+        defaultSiteSettings.footer,
+        (record.footer as SiteSettingsServer["footer"]) || {},
+      ),
+      homeSections: {
+        ...defaultSiteSettings.homeSections,
+        ...((record.homeSections as SiteSettingsServer["homeSections"]) || {}),
+      },
+      aboutHomeSection: record.aboutHomeSection
+        ? deepMerge(
+            defaultSiteSettings.aboutHomeSection,
+            (record.aboutHomeSection as SiteSettingsServer["aboutHomeSection"]),
+          )
+        : defaultSiteSettings.aboutHomeSection,
+      aboutPage: record.aboutPage
+        ? {
+            image: (record.aboutPage as SiteSettingsServer["aboutPage"]).image || defaultSiteSettings.aboutPage.image,
+            team: ((record.aboutPage as SiteSettingsServer["aboutPage"]).team || defaultSiteSettings.aboutPage.team).slice(0, 9),
+          }
+        : defaultSiteSettings.aboutPage,
+      metadata: (record.metadata as SiteSettingsServer["metadata"]) || defaultSiteSettings.metadata,
+      favicon: record.favicon || defaultSiteSettings.favicon,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+    };
+
+    return settings;
+  } catch (error) {
+    // Return defaults on error
+    return {
+      _id: siteSettingsId,
+      ...defaultSiteSettings,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
   }
 }
 

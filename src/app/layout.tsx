@@ -19,8 +19,13 @@ const geistMono = Geist_Mono({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
+  // Use cached version to allow static generation per Next.js docs
+  // https://nextjs.org/docs/messages/next-prerender-dynamic-metadata
+  "use cache";
+  
   try {
-    const settings = await getSiteSettings();
+    const { getSiteSettingsCached } = await import("@/lib/site-settings-server");
+    const settings = await getSiteSettingsCached();
     const metadata = settings.metadata || {
       title: "Juanito Bayani",
       description: "An Underdogs Studios Production",
