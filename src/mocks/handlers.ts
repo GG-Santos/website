@@ -14,7 +14,7 @@ export const handlers = [
 
   // Example POST request
   http.post("/api/user", async ({ request }) => {
-    const data = await request.json();
+    const data = await request.json() as Record<string, unknown>;
     await delay(100);
     return HttpResponse.json(
       {
