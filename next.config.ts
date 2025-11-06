@@ -15,13 +15,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Include native modules for Tailwind CSS v4
+  // Include native modules for Tailwind CSS v4 and Prisma binaries
   outputFileTracingIncludes: {
     "/*": [
       "./node_modules/lightningcss/**/*",
       "./node_modules/lightningcss-linux-x64-gnu/**/*",
       "./node_modules/@tailwindcss/oxide/**/*",
       "./node_modules/@tailwindcss/oxide-linux-x64-gnu/**/*",
+      "./generated/client/**/*",
+      "./node_modules/.prisma/client/**/*",
+      "./node_modules/@prisma/engines/**/*",
     ],
   },
   // Note: Rewrites are not needed since we're using App Router API routes
