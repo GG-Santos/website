@@ -34,10 +34,10 @@ import { trpc } from "@/lib/trpc/client";
 import { z } from "zod";
 
 const aboutHomeSectionFormSchema = aboutHomeSectionSchema;
-type AboutHomeSectionFormValues = z.infer<typeof aboutHomeSectionSchema>;
+type AboutHomeSectionFormValues = z.input<typeof aboutHomeSectionSchema>;
 
 const aboutPageFormSchema = aboutPageSchema;
-type AboutPageFormValues = z.infer<typeof aboutPageSchema>;
+type AboutPageFormValues = z.input<typeof aboutPageSchema>;
 
 export default function AboutPage() {
   const utils = trpc.useUtils();
