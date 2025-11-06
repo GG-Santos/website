@@ -62,7 +62,7 @@ const gameAssetSchema = z.object({
   published: z.boolean().default(true),
 });
 
-type GameAssetForm = z.infer<typeof gameAssetSchema>;
+type GameAssetForm = z.input<typeof gameAssetSchema>;
 
 export default function GameAssetEditPage() {
   const router = useRouter();
@@ -79,7 +79,7 @@ export default function GameAssetEditPage() {
   );
 
   const form = useForm<GameAssetForm>({
-    resolver: zodResolver(gameAssetSchema),
+    resolver: zodResolver(gameAssetSchema) as any,
     defaultValues: {
       title: "",
       image: "",
